@@ -1,12 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-export const getUsers = createAsyncThunk("getUsers", async () => {
-  const { data } = await axios.get(
-    "https://randomuser.me/api/?results=10&nat=in&gender=male"
-  );
-  return data.results;
-});
+export const getUsers = createAsyncThunk(
+  "getUsers",
+  async ({ results, nat, gender }, thunkAPI) => {
+    try {
+      const { data } = await axios.get(
+        `https://randomuser.me/api/?results=${results}&nat=${nat}&gender=${gender}`
+      );
+      return data.results;
+    } catch (error) {
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
 
 const usersSlice = createSlice({
   name: "users",
@@ -14,23 +21,20 @@ const usersSlice = createSlice({
     isLoading: false,
     errorMsg: "",
     data: [],
+    user: {
+      name: "",
+      age: "",
+      location: {
+        street: "",
+      },
+    },
   },
-  //   reducers: {
-  //     getUsersRequest(state) {
-  //       state.isLoading = true;
-  //       state.errorMsg = "";
-  //     },
-  //     getUsersSuccess(state, action) {
-  //       state.isLoading = false;
-  //       state.errorMsg = "";
-  //       state.data = action.payload;
-  //     },
-  //     getUsersFailure(state) {
-  //       state.isLoading = false;
-  //       state.errorMsg = "Error occurred while fetching users. Please try again.";
-  //       state.data = [];
-  //     },
-  //   },
+  reducers: {
+    updateProfile: (state) => {
+      state.user.name = "Swapnil Chaturevedi";
+      state.user.location.street = "Billionare's Row";
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getUsers.pending, (state) => {
       state.isLoading = true;
@@ -50,7 +54,6 @@ const usersSlice = createSlice({
   },
 });
 
-export const { getUsersRequest, getUsersFailure, getUsersSuccess } =
-  usersSlice.actions;
+export const { updateProfile } = usersSlice.actions;
 
 export default usersSlice.reducer;

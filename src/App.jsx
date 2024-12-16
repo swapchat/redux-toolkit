@@ -12,7 +12,13 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getUsers());
+    dispatch(
+      getUsers({
+        results: 10,
+        nat: "us",
+        gender: "male",
+      })
+    );
   }, []);
   return (
     <>
